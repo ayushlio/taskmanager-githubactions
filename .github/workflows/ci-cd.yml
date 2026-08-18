@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - github-actions
-
   pull_request:
     branches:
       - github-actions
@@ -12,6 +11,23 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    # Spin up PostgreSQL service
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: taskuser
+          POSTGRES_PASSWORD: taskpass123
+          POSTGRES_DB: taskdb
+        ports:
+          - 5432:5432
+        # Health check to ensure Postgres is ready before running tests
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -29,5 +45,8 @@ jobs:
           pip install pytest
 
       - name: Run tests
+        env:
+          # Pass database connection info to your app
+          DATABASE_URL: postgresql://user:password@localhost:5432/taskdb
         run: |
           PYTHONPATH=. python -m pytest tests/
