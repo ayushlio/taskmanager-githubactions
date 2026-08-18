@@ -47,6 +47,6 @@ jobs:
       - name: Run tests
         env:
           # Pass database connection info to your app
-          DATABASE_URL: postgresql://user:password@localhost:5432/taskdb
+          DATABASE_URL: postgresql://taskuser:taskpass123@localhost:5432/taskdb
         run: |
           PYTHONPATH=. python -m pytest tests/
